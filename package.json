@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "registration_test" : "node test1"
+
+  },
+  "dependencies": {
+    "chromedriver": "^112.0.0",
+    "selenium-webdriver": "^4.9.1"
+  }
+}
