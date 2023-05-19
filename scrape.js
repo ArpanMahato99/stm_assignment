@@ -24,7 +24,7 @@ async function fetchData(keyword) {
     // get all the urls provided by search engine
     const searchLinks = await driver.findElements(webdriver.By.css('#rcnt a'));
 
-    // Extract URLs from the search result links haing the keyword
+    // Extract URLs from the search result links having the keyword
     const urls = [];
     for (const link of searchLinks) {
       const url = await link.getAttribute('href');
