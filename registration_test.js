@@ -3,21 +3,23 @@
     The program should generate random email addresses and passwords and verify that the registration process is successful.
  */
 
+// Required dependencies and setup
 const webdriver = require('selenium-webdriver');
 const { By } = webdriver;
-
 const url = "https://magento.softwaretestingboard.com/";
 
+// Initializes the WebDriver and starts the registration process
 async function init(user) {
     let driver = new webdriver.Builder().forBrowser('chrome').build();
     await driver.manage().window().maximize();
-    await driver.get(url).then(registerUser(user, driver));
+    await driver.get(url)
+    await registerUser(user, driver);
 }
 
+// Performs the registration process
 async function registerUser(user, driver) {
-    // click on Create an Account link on homepage
+    // Clicks on the "Create an Account" link on the homepage
     await driver.findElement(By.xpath('/html/body/div[1]/header/div[1]/div/ul/li[3]/a')).click();
-
     await fillUserDetails(driver, user);
     await checkPasswordValidity(driver);
     // click on create an account button
@@ -26,15 +28,14 @@ async function registerUser(user, driver) {
     await checkEmailValidity(driver);
     await checkConfirmPasswordValidity(driver);
 
-    const currentUrl = await driver.getCurrentUrl();
     await printUserRegistrationMsg(driver);
-    setTimeout(() => driver.quit(), 5000);
+    await driver.quit();
 
 }
 
+// Fills in the user details in the registration form
 async function fillUserDetails(driver, user) {
     let { firstname, lastname, email, password, confirmPassword } = user;
-    // fill registration form
     await driver.findElement(By.id('firstname')).sendKeys(firstname);
     await driver.findElement(By.id('lastname')).sendKeys(lastname);
     await driver.findElement(By.id('email_address')).sendKeys(email);
@@ -42,9 +43,9 @@ async function fillUserDetails(driver, user) {
     await driver.findElement(By.id('password-confirmation')).sendKeys(confirmPassword);
 }
 
+// Checks the validity of the email address
 async function checkEmailValidity(driver) {
     try {
-        // check email validity
         const emailError = await driver.findElement(By.id('email_address-error'));
         if (await emailError.isDisplayed()) {
             errorMessage = await emailError.getText();
@@ -53,11 +54,11 @@ async function checkEmailValidity(driver) {
     } catch (err) { }
 }
 
+// check if the password is passing the criteria
+// 1. password should have more than 8 characters
+// 2. password should have UpperCase, LowerCase, Digits and special characters
 async function checkPasswordValidity(driver) {
     try {
-        // check if the password is passing the criteria
-        // 1. password should have more than 8 characters
-        // 2. password should have UpperCase, LowerCase, Digits and special characters
         const passwordError = await driver.findElement(By.id('password-error'));
         if (await passwordError.isDisplayed()) {
             errorMessage = await passwordError.getText();
@@ -66,9 +67,9 @@ async function checkPasswordValidity(driver) {
     } catch (err) { }
 }
 
+// Checks the validity of the confirm password
 async function checkConfirmPasswordValidity(driver) {
     try {
-        // check if password and confirm-password field are having same data or not
         const passwordConfirmationError = await driver.findElement(By.id('password-confirmation-error'));
         if (await passwordConfirmationError.isDisplayed()) {
             errorMessage = await passwordConfirmationError.getText();
@@ -77,6 +78,7 @@ async function checkConfirmPasswordValidity(driver) {
     } catch (err) { }
 }
 
+// Prints the user registration message
 async function printUserRegistrationMsg(driver) {
     const pageTitle = await driver.getTitle();
     let userDetails;
@@ -106,7 +108,7 @@ function generateRandomEmail() {
 }
 
 function generateRandomPassword() {
-    const length = Math.random() * 20;
+    const length = Math.floor(Math.random() * 20);
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let password = '';
     for (let i = 0; i < length; i++) {
@@ -156,8 +158,8 @@ function testInvalidEmail() {
     init(user);
 }
 
-//testRandomEmailAndPassword();
+testRandomEmailAndPassword();
 //testSuccessfulRegistration();
- testInvalidEmail();
+//testInvalidEmail();
 
 

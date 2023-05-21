@@ -3,28 +3,31 @@
     Assumption -> keyword will have only one word
 */
 
-const { error } = require('console');
+// Required dependencies
 const fs = require('fs');
 const webdriver = require('selenium-webdriver');
+const { By, Key, until } = webdriver;
 const url = 'https://www.google.com';
 
+// Function to scrape the top 10 search results for a specific keyword and store the URLs in a JSON file
 async function fetchData(keyword) {
+  // Initialize the WebDriver
   let driver = new webdriver.Builder().forBrowser('chrome').build();
   driver.manage().window().maximize();
   driver.get(url);
 
   try {
-    // Navigate to the search engine website
-    const searchInput = await driver.findElement(webdriver.By.xpath(`//*[@id="APjFqb"]`));
+    // Navigate to the search engine website and perform the search
+    const searchInput = await driver.findElement(By.xpath(`//*[@id="APjFqb"]`));
     await searchInput.sendKeys(keyword);
-    await searchInput.sendKeys(webdriver.Key.RETURN);
+    await searchInput.sendKeys(Key.RETURN);
 
     // Wait for the search results to load
-    await driver.sleep(5000);
-    // get all the urls provided by search engine
-    const searchLinks = await driver.findElements(webdriver.By.css('#rcnt a'));
+    await driver.wait(until.elementLocated(By.css('#rcnt a')), 10000);
+    // Get all the URLs provided by the search engine
+    const searchLinks = await driver.findElements(By.css('#rcnt a'));
 
-    // Extract URLs from the search result links having the keyword
+    // Extract URLs from the search result links that contain the keyword
     const urls = [];
     for (const link of searchLinks) {
       const url = await link.getAttribute('href');
@@ -33,9 +36,11 @@ async function fetchData(keyword) {
       }
     }
 
-    // Extracting top 10 urls
+    // Extract the top 10 URLs
     const top10Urls = urls.slice(0, 10);
     console.log(top10Urls);
+
+    // Write the URLs to a JSON file
     fs.writeFileSync(`${keyword}-links.json`, JSON.stringify(top10Urls,null,2));
     console.log('Search results scraped successfully.');
   } finally {
