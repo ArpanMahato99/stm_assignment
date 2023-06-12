@@ -7,11 +7,11 @@
 const webdriver = require('selenium-webdriver');
 const { By } = webdriver;
 const url = "https://magento.softwaretestingboard.com/";
+const driver = new webdriver.Builder().forBrowser('chrome').build();
+driver.manage().window().maximize();
 
 // Initializes the WebDriver and starts the registration process
 async function init(user) {
-    let driver = new webdriver.Builder().forBrowser('chrome').build();
-    await driver.manage().window().maximize();
     await driver.get(url)
     await registerUser(user, driver);
 }
@@ -108,7 +108,7 @@ function generateRandomEmail() {
 }
 
 function generateRandomPassword() {
-    const length = Math.floor(Math.random() * 20);
+    const length = Math.floor(Math.random() * 20) + 8;
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let password = '';
     for (let i = 0; i < length; i++) {
@@ -158,8 +158,8 @@ function testInvalidEmail() {
     init(user);
 }
 
-testRandomEmailAndPassword();
 //testSuccessfulRegistration();
 //testInvalidEmail();
+testRandomEmailAndPassword();
 
 

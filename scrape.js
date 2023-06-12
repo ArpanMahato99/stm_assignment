@@ -37,11 +37,17 @@ async function fetchData(keyword) {
     }
 
     // Extract the top 10 URLs
-    const top10Urls = urls.slice(0, 10);
-    console.log(top10Urls);
+    const result = {
+      "keyword": keyword,
+      "urls":{}
+    };
+    for(let i = 0; i < 10 && i < urls.length; i++) {
+      result.urls[`${i+1}`] = urls[i];
+    }
+    //console.log(result);
 
     // Write the URLs to a JSON file
-    fs.writeFileSync(`${keyword}-links.json`, JSON.stringify(top10Urls,null,2));
+    fs.writeFileSync(`${keyword}-links.json`, JSON.stringify(result,null,2));
     console.log('Search results scraped successfully.');
   } finally {
     driver.quit();
